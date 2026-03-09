@@ -2,6 +2,8 @@ import { getColor } from "./constants";
 import type { ParsedGraphData } from "./types";
 
 export const parseTuples = (rawText: string): ParsedGraphData => {
+  const normalizeNodeName = (value: string) => value.trim().replace(/\s+/g, " ").toUpperCase();
+
   const isExcludedCategory = (raw: string) => {
     const normalized = (raw || "").trim().toUpperCase();
     return (
@@ -13,6 +15,31 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
       normalized === "CONCEPTS" ||
       normalized === "UNKNOWN"
     );
+  };
+
+  const isExcludedName = (raw: string) => {
+    const value = raw.trim();
+    if (!value) return true;
+    const upper = normalizeNodeName(value);
+
+    // Court/legal entities that should never appear as graph nodes.
+    if (
+      upper.includes("US DISTRICT COURT") ||
+      upper.includes("U.S. DISTRICT COURT") ||
+      upper.includes("DISTRICT COURT") ||
+      upper.includes("COURT OF APPEALS") ||
+      upper.includes("SUPREME COURT")
+    ) {
+      return true;
+    }
+
+    // Case-style captions and legal citation patterns.
+    if (/(\s|^)v\.(\s|$)/i.test(value) || /(\s|^)vs\.(\s|$)/i.test(value)) return true;
+    if (/\bno\.\s*[0-9A-Z-]+\b/i.test(value)) return true;
+    if (/\b\d{4}\s+WL\s+\d+\b/i.test(value)) return true;
+    if (/\b\d+\s+F\.(?:\s?SUPP\.?\s?\d*|\dD|\dTH|APP'?X)\s+\d+\b/i.test(upper)) return true;
+
+    return false;
   };
 
   const norm = rawText
@@ -76,8 +103,9 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
       }
       const normalizedCategory = (category || "").trim().toUpperCase();
 
-      if (name && isExcludedCategory(normalizedCategory)) {
-        excludedNodeNames.add(name);
+      if (name && (isExcludedCategory(normalizedCategory) || isExcludedName(name))) {
+        const excludedKey = normalizeNodeName(name);
+        excludedNodeNames.add(excludedKey);
         if (seenNodes.has(name)) {
           removeNodeAndIncidentEdges(name);
         }
@@ -146,7 +174,14 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
     if (type === "relationship" && parts.length >= 3) {
       const [source, target, label, strengthRaw, ...evidenceParts] = parts;
 
-      if (excludedNodeNames.has(source) || excludedNodeNames.has(target)) {
+      const sourceKey = normalizeNodeName(source);
+      const targetKey = normalizeNodeName(target);
+      if (
+        excludedNodeNames.has(sourceKey) ||
+        excludedNodeNames.has(targetKey) ||
+        isExcludedName(source) ||
+        isExcludedName(target)
+      ) {
         continue;
       }
 

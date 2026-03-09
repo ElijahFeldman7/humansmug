@@ -38,6 +38,29 @@ function normalizeText(value: string) {
   return value.trim().toLowerCase();
 }
 
+function isIgnoredMapName(raw: string) {
+  const value = String(raw || "").trim();
+  if (!value) return true;
+  const upper = value.toUpperCase();
+
+  if (
+    upper.includes("US DISTRICT COURT") ||
+    upper.includes("U.S. DISTRICT COURT") ||
+    upper.includes("DISTRICT COURT") ||
+    upper.includes("COURT OF APPEALS") ||
+    upper.includes("SUPREME COURT")
+  ) {
+    return true;
+  }
+
+  if (/(\s|^)v\.(\s|$)/i.test(value) || /(\s|^)vs\.(\s|$)/i.test(value)) return true;
+  if (/\bno\.\s*[0-9A-Z-]+\b/i.test(value)) return true;
+  if (/\b\d{4}\s+WL\s+\d+\b/i.test(value)) return true;
+  if (/\b\d+\s+F\.(?:\s?SUPP\.?\s?\d*|\dD|\dTH|APP'?X)\s+\d+\b/i.test(upper)) return true;
+
+  return false;
+}
+
 function loadGeoCache(): Record<string, GeoLocation> {
   try {
     const raw = localStorage.getItem(GEO_CACHE_KEY);
@@ -205,8 +228,10 @@ export default function MapPanel({ nodeMetaMap, edgeMetaMap, isActive }: MapPane
 
   const locations = useMemo(
     () =>
-      Object.values(nodeMetaMap).filter((node) =>
-        locationCategories.has(node.category.toUpperCase()),
+      Object.values(nodeMetaMap).filter(
+        (node) =>
+          locationCategories.has(node.category.toUpperCase()) &&
+          !isIgnoredMapName(node.name),
       ),
     [nodeMetaMap, locationCategories],
   );

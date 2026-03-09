@@ -72,10 +72,6 @@ export default function Home() {
   const [nodeMetaMap, setNodeMetaMap] = useState<Record<string, NodeMeta>>({});
   const [edgeMetaMap, setEdgeMetaMap] = useState<Record<string, EdgeMeta>>({});
   const [evidenceMap, setEvidenceMap] = useState<Record<string, string>>({});
-  const [citationMap, setCitationMap] = useState<{
-    entities: Record<string, Array<{ docId: string; sentence: string; fileUrl?: string }>>;
-    edges: Record<string, Array<{ docId: string; sentence: string; fileUrl?: string }>>;
-  }>({ entities: {}, edges: {} });
   const [nodesCount, setNodesCount] = useState(0);
   const [edgesCount, setEdgesCount] = useState(0);
   const [legendTypes, setLegendTypes] = useState<string[]>([]);
@@ -95,9 +91,6 @@ export default function Home() {
   const [minClosenessDegree, setMinClosenessDegree] = useState(2);
   const [rankingsEnabled, setRankingsEnabled] = useState(true);
   const [legendCollapsed, setLegendCollapsed] = useState(false);
-  const [nodeSummaries, setNodeSummaries] = useState<Record<string, string>>({});
-  const [nodeSummaryLoading, setNodeSummaryLoading] = useState<Record<string, boolean>>({});
-  const [nodeSummaryKeys, setNodeSummaryKeys] = useState<Record<string, string>>({});
   const [communities, setCommunities] = useState<Array<{ id: number; nodes: string[]; size: number }>>([]);
   const [selectedCommunityId, setSelectedCommunityId] = useState<number | null>(null);
   const [rightPanel, setRightPanel] = useState<RightPanelMode>("upload");
@@ -152,9 +145,6 @@ export default function Home() {
       edgeMetaMapRef.current = edgeMetaMap;
       setNodeMetaMap(nodeMetaMap);
       setEdgeMetaMap(edgeMetaMap);
-      setNodeSummaries({});
-      setNodeSummaryLoading({});
-      setNodeSummaryKeys({});
       setSelectedCommunityId(null);
       const communityResult = computeCommunities(
         nodes.map((node) => node.id),
@@ -231,7 +221,6 @@ export default function Home() {
         mergedTuplesPath?: string;
         blurbCount?: number;
         evidenceMap?: Record<string, string>;
-        citationMap?: typeof citationMap;
         error?: string;
       };
 
@@ -244,7 +233,6 @@ export default function Home() {
         }`,
       );
       setEvidenceMap(payload.evidenceMap || {});
-      if (payload.citationMap) setCitationMap(payload.citationMap);
       renderOnDiagram(payload.mergedTuples);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -321,42 +309,6 @@ export default function Home() {
     },
     [handleFocusNode],
   );
-
-  useEffect(() => {
-    if (!detail || detail.kind !== "node") return;
-    const name = detail.data.name;
-    const descriptions = detail.data.descs?.filter(Boolean) || [];
-    if (descriptions.length === 0) return;
-    const descKey = descriptions.join("||");
-    if (nodeSummaryLoading[name]) return;
-    if (nodeSummaries[name] && nodeSummaryKeys[name] === descKey) return;
-    setNodeSummaryLoading((prev) => ({ ...prev, [name]: true }));
-    const run = async () => {
-      try {
-        const response = await fetch("/api/entity-summary", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            descriptions,
-            nodeNames: Object.keys(nodeMetaMapRef.current),
-          }),
-        });
-        const payload = (await response.json()) as { output?: string; error?: string };
-        if (!response.ok) {
-          throw new Error(payload.error || "Summary request failed");
-        }
-        setNodeSummaries((prev) => ({ ...prev, [name]: payload.output || "" }));
-        setNodeSummaryKeys((prev) => ({ ...prev, [name]: descKey }));
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        setNodeSummaries((prev) => ({ ...prev, [name]: `Summary failed: ${message}` }));
-      } finally {
-        setNodeSummaryLoading((prev) => ({ ...prev, [name]: false }));
-      }
-    };
-    void run();
-  }, [detail, nodeSummaries, nodeSummaryLoading, nodeSummaryKeys]);
 
   useEffect(() => {
     if (selectedCommunityId === null) {
@@ -690,14 +642,10 @@ export default function Home() {
       const parsed = JSON.parse(saved) as {
         raw?: string;
         evidenceMap?: Record<string, string>;
-        citationMap?: typeof citationMap;
       };
       if (!parsed.raw) return;
       if (parsed.evidenceMap) {
         setEvidenceMap(parsed.evidenceMap);
-      }
-      if (parsed.citationMap) {
-        setCitationMap(parsed.citationMap);
       }
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -730,10 +678,9 @@ export default function Home() {
     const payload = JSON.stringify({
       raw: lastGraphRaw,
       evidenceMap,
-      citationMap,
     });
     window.localStorage.setItem(GRAPH_STORAGE_KEY, payload);
-  }, [lastGraphRaw, evidenceMap, citationMap]);
+  }, [lastGraphRaw, evidenceMap]);
 
   const rankingScores = useMemo(() => {
     const nodeIds = Object.keys(nodeMetaMap);
@@ -916,10 +863,7 @@ export default function Home() {
                       detail={detail}
                       forceOpen
                       emptyLabel="Click a node or edge on the graph."
-                      nodeSummaries={nodeSummaries}
-                      nodeSummaryLoading={nodeSummaryLoading}
                       onFocusNode={handleFocusNode}
-                      citationMap={citationMap}
                     />
                   </div>
                 )}
