@@ -2,6 +2,19 @@ import { getColor } from "./constants";
 import type { ParsedGraphData } from "./types";
 
 export const parseTuples = (rawText: string): ParsedGraphData => {
+  const isExcludedCategory = (raw: string) => {
+    const normalized = (raw || "").trim().toUpperCase();
+    return (
+      !normalized ||
+      normalized === "DEFAULT" ||
+      normalized === "CASE" ||
+      normalized === "COURT" ||
+      normalized === "CONCEPT" ||
+      normalized === "CONCEPTS" ||
+      normalized === "UNKNOWN"
+    );
+  };
+
   const norm = rawText
     .replace(/""/g, '"')
     .replace(/\{tuple_delimiter\}/g, "\x01")
@@ -14,7 +27,30 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
   const edgeMetaMap: ParsedGraphData["edgeMetaMap"] = {};
   const incomingCount: Record<string, number> = {};
   const seenNodes = new Set<string>();
+  const excludedNodeNames = new Set<string>();
   let edgeCounter = 0;
+
+  const removeNodeAndIncidentEdges = (nodeId: string) => {
+    delete nodeMetaMap[nodeId];
+    seenNodes.delete(nodeId);
+    delete incomingCount[nodeId];
+
+    for (let i = nodes.length - 1; i >= 0; i -= 1) {
+      if (nodes[i].id === nodeId) {
+        nodes.splice(i, 1);
+      }
+    }
+
+    for (let i = edges.length - 1; i >= 0; i -= 1) {
+      const edge = edges[i];
+      if (edge.from === nodeId || edge.to === nodeId) {
+        if (edge.id) {
+          delete edgeMetaMap[String(edge.id)];
+        }
+        edges.splice(i, 1);
+      }
+    }
+  };
 
   // Support both placeholder delimiters and pipe-delimited tuples.
   const re = /\("([^"]+)"\s*(?:\x01|\|)\s*([\s\S]+?)\)(?=\s*(?:\n|$|\())/g;
@@ -38,7 +74,15 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
       if (desc.endsWith(")")) {
         desc = desc.slice(0, -1).trim();
       }
-      const normalizedCategory = (category || "DEFAULT").toUpperCase();
+      const normalizedCategory = (category || "").trim().toUpperCase();
+
+      if (name && isExcludedCategory(normalizedCategory)) {
+        excludedNodeNames.add(name);
+        if (seenNodes.has(name)) {
+          removeNodeAndIncidentEdges(name);
+        }
+        continue;
+      }
 
       // Split merged descriptions (joined with " || " by mergeTuplesLocally)
       const splitDescs = desc
@@ -69,6 +113,22 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
       } else if (name) {
         const meta = nodeMetaMap[name];
         if (meta) {
+          // If this node was first created from a relationship fallback, upgrade it
+          // to the explicit entity category when available.
+          if (meta.category !== normalizedCategory) {
+            meta.category = normalizedCategory;
+            const c = getColor(normalizedCategory);
+            const node = nodes.find((n) => n.id === name);
+            if (node) {
+              node.color = {
+                background: c.bg,
+                border: c.border,
+                highlight: { background: c.bg, border: "#ffffff" },
+                hover: { background: c.bg, border: c.accent },
+              };
+            }
+          }
+
           const existing = meta.descs ? [...meta.descs] : meta.desc ? [meta.desc] : [];
           for (const d of splitDescs) {
             if (d && !existing.includes(d)) {
@@ -85,13 +145,19 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
 
     if (type === "relationship" && parts.length >= 3) {
       const [source, target, label, strengthRaw, ...evidenceParts] = parts;
+
+      if (excludedNodeNames.has(source) || excludedNodeNames.has(target)) {
+        continue;
+      }
+
       const strength = Math.min(10, Math.max(1, Number.parseFloat(strengthRaw) || 5));
       const evidence = evidenceParts.join(" ").trim();
 
       [source, target].forEach((nodeId) => {
         if (!seenNodes.has(nodeId)) {
-          const c = getColor("DEFAULT");
-          nodeMetaMap[nodeId] = { name: nodeId, category: "DEFAULT", desc: "", descs: [] };
+          const fallbackCategory = "ORGANIZATION";
+          const c = getColor(fallbackCategory);
+          nodeMetaMap[nodeId] = { name: nodeId, category: fallbackCategory, desc: "", descs: [] };
           nodes.push({
             id: nodeId,
             label: nodeId,

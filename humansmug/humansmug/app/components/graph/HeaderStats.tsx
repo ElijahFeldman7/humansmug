@@ -7,7 +7,7 @@ export function HeaderStats({ nodesCount, edgesCount }: HeaderStatsProps) {
   return (
     <div className="flex flex-1 items-center gap-4">
       <span className="[font-family:var(--font-syne)] text-[1.05rem] font-extrabold tracking-tight text-white">
-        Crime<span className="text-[#4af0b0]">-KG</span>
+        LINK<span className="text-[#4af0b0]">-KG</span>
       </span>
 
       <div className="ml-auto flex gap-5 text-right text-[0.65rem] text-[#6272a4]">

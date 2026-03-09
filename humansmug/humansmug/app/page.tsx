@@ -552,7 +552,6 @@ export default function Home() {
     }
   }, [osintCandidates, osintSelected, showToast]);
 
-  // OSINT: refresh task list
   const handleOsintRefresh = useCallback(async () => {
     try {
       const res = await fetch("/api/terac", {
@@ -567,7 +566,6 @@ export default function Home() {
     }
   }, []);
 
-  // Auto-scroll agent chat
   useEffect(() => {
     agentMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [agentMessages]);
@@ -922,9 +920,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* ─── Main two-panel layout ─── */}
-        <div className="grid min-h-0 md:grid-cols-[1fr_380px]">
-          {/* ─── LEFT: Graph + Sidebar overlay ─── */}
+        <div className="grid min-h-0 grid-cols-1">
           <div className="relative flex min-h-0 min-w-0">
             {/* Sidebar */}
             <aside className="flex w-[300px] shrink-0 flex-col overflow-hidden border-r border-[#2a3347] bg-[#141820]">
@@ -1098,7 +1094,7 @@ export default function Home() {
           </div>
 
           {/* ─── RIGHT: Context panel ─── */}
-          <div className="flex min-h-0 flex-col border-l border-[#2a3347] bg-[#141820]">
+          <div className="hidden min-h-0 flex-col border-l border-[#2a3347] bg-[#141820]">
             {/* Panel tab bar */}
             <div className="flex items-center border-b border-[#2a3347]">
               {panelTabs.map((tab) => (

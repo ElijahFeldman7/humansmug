@@ -32,6 +32,22 @@ function getCategoryColor(cat: string) {
   return CATEGORY_COLORS[cat.toUpperCase()] || CATEGORY_COLORS.DEFAULT;
 }
 
+function sanitizeCategory(cat: string) {
+  const normalized = (cat || "").trim().toUpperCase();
+  if (!normalized) return "ORGANIZATION";
+  if (
+    normalized === "DEFAULT" ||
+    normalized === "CASE" ||
+    normalized === "COURT" ||
+    normalized === "UNKNOWN" ||
+    normalized === "CONCEPT" ||
+    normalized === "CONCEPTS"
+  ) {
+    return "ORGANIZATION";
+  }
+  return normalized;
+}
+
 export default function OsintDashboard() {
   const params = useParams();
   const taskId = params.taskId as string;
@@ -175,7 +191,7 @@ export default function OsintDashboard() {
                 OSINT Research Task
               </h1>
               <p className="text-[0.68rem] text-[#6272a4]">
-                Crime-KG Intelligence Enrichment &middot; Task {taskId.slice(-8)}
+                LINK-KG Intelligence Enrichment &middot; Task {taskId.slice(-8)}
               </p>
             </div>
           </div>
@@ -206,19 +222,19 @@ export default function OsintDashboard() {
               <div className="mb-2 flex items-center gap-2">
                 <div
                   className="size-2.5 rounded-full"
-                  style={{ background: getCategoryColor(entity.category) }}
+                  style={{ background: getCategoryColor(sanitizeCategory(entity.category)) }}
                 />
                 <span className="text-[0.78rem] font-bold">{entity.name}</span>
               </div>
               <div
                 className="mb-2 inline-block rounded-full px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.1em]"
                 style={{
-                  color: getCategoryColor(entity.category),
-                  background: getCategoryColor(entity.category) + "15",
-                  border: `1px solid ${getCategoryColor(entity.category)}30`,
+                  color: getCategoryColor(sanitizeCategory(entity.category)),
+                  background: getCategoryColor(sanitizeCategory(entity.category)) + "15",
+                  border: `1px solid ${getCategoryColor(sanitizeCategory(entity.category))}30`,
                 }}
               >
-                {entity.category}
+                {sanitizeCategory(entity.category)}
               </div>
               <p className="mb-2 text-[0.7rem] leading-relaxed text-[#9aa6cf]">
                 {entity.desc || "No description available"}

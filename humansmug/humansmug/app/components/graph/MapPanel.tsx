@@ -230,7 +230,7 @@ export default function MapPanel({ nodeMetaMap, edgeMetaMap, isActive }: MapPane
     const run = async () => {
       setIsLoading(true);
       setError(null);
-      setGeoProgress("Resolving locations with Gemini...");
+      setGeoProgress("Resolving locations...");
 
       const maxLocations = 25;
       const targets = locations.slice(0, maxLocations);
