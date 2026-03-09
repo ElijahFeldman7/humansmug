@@ -531,6 +531,7 @@ export async function POST(request: Request) {
     const files = form.getAll("files").filter(Boolean) as File[];
     const blurbSize = Number(form.get("blurbSize") || 2);
     const applyFilter = String(form.get("applyFilter") || "true") !== "false";
+    const extractMissingCsvTuples = String(form.get("extractMissingCsvTuples") || "false") === "true";
 
     if (!files.length) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
@@ -541,6 +542,8 @@ export async function POST(request: Request) {
 
     const rows: Array<{ doc_id: string; sentence_blurb: string }> = [];
     const tupleRows: Array<{ doc_id: string; sentence_blurb: string; ner_re_output: string }> = [];
+    let inputRowCount = 0;
+    let skippedMissingTupleCount = 0;
 
     for (const file of files) {
       const name = file.name || "upload";
@@ -563,17 +566,21 @@ export async function POST(request: Request) {
             const sentenceBlurb = row.sentence_blurb || "";
             const docId = row.doc_id || name;
             const nerOutput = row.ner_re_output || row.tuple_output || "";
+            if (!sentenceBlurb.trim() && !nerOutput.trim()) continue;
+            inputRowCount += 1;
             if (nerOutput.trim()) {
               tupleRows.push({
                 doc_id: docId,
                 sentence_blurb: sentenceBlurb,
                 ner_re_output: nerOutput,
               });
-            } else if (sentenceBlurb.trim()) {
+            } else if (sentenceBlurb.trim() && extractMissingCsvTuples) {
               rows.push({
                 doc_id: docId,
                 sentence_blurb: sentenceBlurb,
               });
+            } else if (sentenceBlurb.trim()) {
+              skippedMissingTupleCount += 1;
             }
           }
         } else {
@@ -586,17 +593,21 @@ export async function POST(request: Request) {
             if (raw.length < 2) continue;
             const [docId, sentenceBlurb, ...rest] = raw as string[];
             const nerOutput = rest.join(",") || "";
+            if (!(sentenceBlurb || "").trim() && !nerOutput.trim()) continue;
+            inputRowCount += 1;
             if (nerOutput.trim()) {
               tupleRows.push({
                 doc_id: docId || name,
                 sentence_blurb: sentenceBlurb || "",
                 ner_re_output: nerOutput,
               });
-            } else if ((sentenceBlurb || "").trim()) {
+            } else if ((sentenceBlurb || "").trim() && extractMissingCsvTuples) {
               rows.push({
                 doc_id: docId || name,
                 sentence_blurb: sentenceBlurb || "",
               });
+            } else if ((sentenceBlurb || "").trim()) {
+              skippedMissingTupleCount += 1;
             }
           }
         }
@@ -608,6 +619,7 @@ export async function POST(request: Request) {
       const blurbs = chunkSentences(sentences, blurbSize);
       for (const blurb of blurbs) {
         if (applyFilter && !isRelevant(blurb)) continue;
+        inputRowCount += 1;
         rows.push({ doc_id: name, sentence_blurb: blurb });
       }
     }
@@ -620,6 +632,9 @@ export async function POST(request: Request) {
       ["doc_id", "sentence_blurb"].join(","),
       ...rows.map((row) => `${csvEscape(row.doc_id)},${csvEscape(row.sentence_blurb)}`),
     ].join("\n");
+
+    const extractedBlurbCount = rows.length;
+    const preTupleCount = tupleRows.length;
 
     for (const row of rows) {
       const output = await extractTuples(row.sentence_blurb);
@@ -641,7 +656,11 @@ export async function POST(request: Request) {
     // Coreference resolution is intentionally disabled: use merged tuples directly.
 
     return NextResponse.json({
+      inputRowCount,
       blurbCount: rows.length,
+      extractedBlurbCount,
+      preTupleCount,
+      skippedMissingTupleCount,
       tupleCount: tupleRows.length,
       mergedTuples,
       evidenceMap,

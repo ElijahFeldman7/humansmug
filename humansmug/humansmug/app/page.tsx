@@ -209,6 +209,7 @@ export default function Home() {
       Array.from(docFiles).forEach((file) => form.append("files", file));
       form.append("blurbSize", "2");
       form.append("applyFilter", "true");
+      form.append("extractMissingCsvTuples", "false");
 
       const response = await fetch("/api/process-docs", {
         method: "POST",
@@ -216,7 +217,11 @@ export default function Home() {
       });
       const payload = (await response.json()) as {
         mergedTuples?: string;
+        inputRowCount?: number;
         blurbCount?: number;
+        extractedBlurbCount?: number;
+        preTupleCount?: number;
+        skippedMissingTupleCount?: number;
         tupleCount?: number;
         evidenceMap?: Record<string, string>;
         error?: string;
@@ -226,7 +231,7 @@ export default function Home() {
         throw new Error(payload.error || "Failed to process documents");
       }
       setProcessStatus(
-        `Processed ${payload.blurbCount || 0} blurbs into ${payload.tupleCount || 0} tuples. Saved in local storage.`,
+        `Loaded ${payload.inputRowCount || 0} rows: ${payload.preTupleCount || 0} already had tuples, ${payload.skippedMissingTupleCount || 0} missing-tuple rows skipped, ${payload.extractedBlurbCount || payload.blurbCount || 0} extracted. Total tuples: ${payload.tupleCount || 0}. Saved in local storage.`,
       );
       setEvidenceMap(payload.evidenceMap || {});
       renderOnDiagram(payload.mergedTuples);
