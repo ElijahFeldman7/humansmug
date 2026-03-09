@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import fs from "node:fs/promises";
-import path from "node:path";
 import mammoth from "mammoth";
 import Papa from "papaparse";
 
@@ -538,10 +536,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
     }
 
-    // Save uploaded files to public/uploads for citation linking
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadsDir, { recursive: true });
-    const savedFiles = new Map<string, string>(); // docId → public URL
+    // Keep processing fully in-memory so this route works on read-only filesystems.
+    const savedFiles = new Map<string, string>();
 
     const rows: Array<{ doc_id: string; sentence_blurb: string }> = [];
     const tupleRows: Array<{ doc_id: string; sentence_blurb: string; ner_re_output: string }> = [];
@@ -549,12 +545,6 @@ export async function POST(request: Request) {
     for (const file of files) {
       const name = file.name || "upload";
       const buffer = Buffer.from(await file.arrayBuffer());
-
-      // Save the file locally for citation access
-      const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const savedPath = path.join(uploadsDir, safeName);
-      await fs.writeFile(savedPath, buffer);
-      savedFiles.set(name, `/uploads/${safeName}`);
 
       if (name.toLowerCase().endsWith(".csv")) {
         const text = buffer.toString("utf-8");
