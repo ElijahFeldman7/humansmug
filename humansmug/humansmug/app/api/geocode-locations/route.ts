@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 type LocationInput = {
   name: string;
@@ -23,14 +24,16 @@ function isBorderCategory(category: string) {
 
 async function geocodeWithNominatim(location: LocationInput): Promise<ResolvedLocation | null> {
   const query = encodeURIComponent(location.name);
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${query}`,
-    {
-      headers: {
-        "User-Agent": "humansmug-link-kg/1.0",
-      },
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${query}`, {
+    headers: {
+      "User-Agent": "humansmug-link-kg/1.0",
+      Accept: "application/json",
     },
-  );
+    signal: controller.signal,
+    cache: "no-store",
+  }).finally(() => clearTimeout(timeout));
 
   if (!response.ok) {
     return null;
@@ -86,10 +89,21 @@ export async function POST(request: Request) {
 
     const targets = locations.slice(0, 30);
     const resolved: ResolvedLocation[] = [];
-    for (const loc of targets) {
-      const item = await geocodeWithNominatim(loc);
-      if (item) {
-        resolved.push(item);
+
+    const concurrency = 6;
+    for (let i = 0; i < targets.length; i += concurrency) {
+      const batch = targets.slice(i, i + concurrency);
+      const batchResults = await Promise.all(
+        batch.map(async (loc) => {
+          try {
+            return await geocodeWithNominatim(loc);
+          } catch {
+            return null;
+          }
+        }),
+      );
+      for (const item of batchResults) {
+        if (item) resolved.push(item);
       }
     }
 
