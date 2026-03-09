@@ -626,16 +626,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No blurbs or tuples extracted" }, { status: 400 });
     }
 
-    const timestamp = Date.now();
-    const blurbsPath = path.join("/tmp", `blurbs_${timestamp}.csv`);
-    const tuplesPath = path.join("/tmp", `tuples_${timestamp}.csv`);
-    const mergedPath = path.join("/tmp", `merged_${timestamp}.txt`);
-
     const blurbCsv = [
       ["doc_id", "sentence_blurb"].join(","),
       ...rows.map((row) => `${csvEscape(row.doc_id)},${csvEscape(row.sentence_blurb)}`),
     ].join("\n");
-    await fs.writeFile(blurbsPath, blurbCsv, "utf-8");
 
     for (const row of rows) {
       const output = await extractTuples(row.sentence_blurb);
@@ -649,7 +643,6 @@ export async function POST(request: Request) {
           `${csvEscape(row.doc_id)},${csvEscape(row.sentence_blurb)},${csvEscape(row.ner_re_output)}`,
       ),
     ].join("\n");
-    await fs.writeFile(tuplesPath, tupleCsv, "utf-8");
 
     const combinedTuples = tupleRows.map((row) => row.ner_re_output).join("\n{record_delimiter}\n");
     let mergedTuples = mergeTuplesLocally(combinedTuples);
@@ -657,12 +650,7 @@ export async function POST(request: Request) {
     const citationMap = extractCitationMap(tupleRows, savedFiles);
     // Coreference resolution is intentionally disabled: use merged tuples directly.
 
-    await fs.writeFile(mergedPath, mergedTuples, "utf-8");
-
     return NextResponse.json({
-      blurbsCsvPath: blurbsPath,
-      tuplesCsvPath: tuplesPath,
-      mergedTuplesPath: mergedPath,
       blurbCount: rows.length,
       tupleCount: tupleRows.length,
       mergedTuples,

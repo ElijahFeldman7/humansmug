@@ -216,10 +216,8 @@ export default function Home() {
       });
       const payload = (await response.json()) as {
         mergedTuples?: string;
-        blurbsCsvPath?: string;
-        tuplesCsvPath?: string;
-        mergedTuplesPath?: string;
         blurbCount?: number;
+        tupleCount?: number;
         evidenceMap?: Record<string, string>;
         error?: string;
       };
@@ -228,9 +226,7 @@ export default function Home() {
         throw new Error(payload.error || "Failed to process documents");
       }
       setProcessStatus(
-        `Processed ${payload.blurbCount || 0} blurbs. Output saved to ${payload.tuplesCsvPath || ""} ${
-          payload.mergedTuplesPath ? `(${payload.mergedTuplesPath})` : ""
-        }`,
+        `Processed ${payload.blurbCount || 0} blurbs into ${payload.tupleCount || 0} tuples. Saved in local storage.`,
       );
       setEvidenceMap(payload.evidenceMap || {});
       renderOnDiagram(payload.mergedTuples);
