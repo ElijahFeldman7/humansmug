@@ -1,0 +1,5 @@
+INFO: Resuming — 216/194580 rows already done, skipping ahead
+INFO: Processing 194364 remaining rows with model 'uniner-smuggling:latest'...
+INFO:   [220/194580]  0.0 rows/s  ~113307.8 min remaining
+INFO:   [230/194580]  0.1 rows/s  ~59153.2 min remaining
+INFO:   [240/194580]  0.1 rows/s  ~51083.6 min remaining

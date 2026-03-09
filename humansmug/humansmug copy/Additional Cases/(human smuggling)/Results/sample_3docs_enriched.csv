@@ -1,0 +1,114 @@
+"doc_id","sentence_blurb","ner_re_output"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Gen. Land Office of Tex v.","(""entity""|GENERAL LAND OFFICE|ORGANIZATION|General Land Office of Texas)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","PRESIDENT JOSEPH R. BIDEN, ET AL., Defendants,STATE OF MISSOURI; STATE OF TEXAS, Plaintiffs—Appellants, versus JOSEPH R.","(""entity""|JOSEPH R. BIDEN|PERSON|President)
+(""entity""|MISSOURI|LOCATION|State)
+(""entity""|TEXAS|LOCATION|State)
+(""relationship""|JOSEPH R. BIDEN|MISSOURI|Biden is the President of the United States whose administration is involved in the case|7)
+(""relationship""|JOSEPH R. BIDEN|TEXAS|Biden is the President of the United States whose administration is involved in the case|7)
+(""relationship""|MISSOURI|TEXAS|Both states are plaintiffs in the case|9)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","MILLER, IN HIS OFFICIAL CAPACITY AS ACTING COMMISSIONER OF THE UNITED STATES CUSTOMS AND BORDER PROTECTION; UNITED STATES CUSTOMS AND BORDER PROTECTION, Defendants—Appellees. Prior History: [**1] Appeal from the United States District Court for the Southern District of Texas.","(""entity""|MILLER|PERSON|Acting Commissioner of United States Customs and Border Protection)
+(""entity""|UNITED STATES CUSTOMS AND BORDER PROTECTION|ORGANIZATION|Organization whose Acting Commissioner is Miller)
+(""relationship""|MILLER|UNITED STATES CUSTOMS AND BORDER PROTECTION|Miller is the Acting Commissioner of United States Customs and Border Protection|9)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Prior History: [**1] Appeal from the United States District Court for the Southern District of Texas. USDC Nos. 7:21-CV-420 & 7:21-CV-272.","(""entity""|UNITED STATES DISTRICT COURT|ORGANIZATION|Court for the Southern District of Texas)
+(""entity""|SOUTHERN DISTRICT OF TEXAS|LOCATION|District where the United States District Court is located)
+(""relationship""|UNITED STATES DISTRICT COURT|SOUTHERN DISTRICT OF TEXAS|The United States District Court is for the Southern District of Texas|10)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Land Office v. Biden, 619 F.","(""entity""|LAND OFFICE|ORGANIZATION|Land Office)
+(""entity""|BIDEN|PERSON|Biden)
+(""relationship""|LAND OFFICE|BIDEN|Land Office v. Biden|10)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Privity is not established by the mere fact that persons may be interested in the same question or in proving the same set of facts. And it requires more than a showing of parallel interests or, even, a use of the same attorney in both suits.","(""entity""|PRIVITY|CONCEPT|Legal concept requiring more than parallel interests or shared attorney)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","And it requires more than a showing of parallel interests or, even, a use of the same attorney in both suits. Where lawsuits involve different agencies of the same state, the crucial point is whether or not in the earlier litigation the representative of the state had authority to represent the state's interests in a final adjudication of the issue in controversy.","(""entity""|STATE|ORGANIZATION|State whose agencies were involved in different lawsuits)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","The plaintiff must therefore show (i) an injury in fact that is concrete, particularized, and actual or imminent, (ii) that the defendant likely caused the injury, and (iii) that the injury would likely be redressed by judicial relief. The plaintiff must make this showing with the manner and degree of evidence required at the successive stages of the litigation.","(""entity""|PLAINTIFF|PERSON|Party who must show injury in fact)
+(""entity""|DEFENDANT|PERSON|Party who likely caused the injury)
+(""relationship""|PLAINTIFF|DEFENDANT|Plaintiff must show defendant likely caused injury|7)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","The plaintiff must make this showing with the manner and degree of evidence required at the successive stages of the litigation. At the pleading stage, general factual allegations of injury resulting from the defendant's conduct may suffice, for on a motion to dismiss, the appellate court presumes that general allegations embrace those specific facts that are necessary to support the claim.","(""entity""|PLAINTIFF|PERSON|Party who must make a showing with the manner and degree of evidence required at successive stages of the litigation)
+(""entity""|DEFENDANT|PERSON|Party whose conduct is alleged to have caused injury)
+(""relationship""|PLAINTIFF|DEFENDANT|The plaintiff's allegations of injury resulted from the defendant's conduct|7)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","The general rule is that a federal appellate court does not consider an issue not passed upon below. But it is within the court's discretion to address such questions where the proper resolution is beyond any doubt or where injustice might otherwise result.","(""entity""|FEDERAL APPELLATE COURT|ORGANIZATION|Court that does not consider an issue not passed upon below)
+(""entity""|ISSUE|ORGANIZATION|Issue not passed upon below)
+(""relationship""|FEDERAL APPELLATE COURT|ISSUE|The federal appellate court does not consider an issue not passed upon below|9)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Counsel: For State of Missouri, Plaintiff - Appellant: Jeff Johnson, Saint Louis, MO. For State of Texas, Plaintiff - Appellant: Ryan Baasch, Office of the Texas Attorney General, Austin, TX; Ryan Daniel Walters, Attorney, Office of the Attorney General of Texas, Austin, TX.","(""entity""|JEFF JOHNSON|PERSON|Plaintiff Appellant for State of Missouri)
+(""entity""|SAINT LOUIS|LOCATION|City Missouri)
+(""entity""|STATE OF MISSOURI|ORGANIZATION|Plaintiff Appellant)
+(""entity""|RYAN BAASCH|PERSON|Plaintiff Appellant for State of Texas)
+(""entity""|OFFICE OF THE TEXAS ATTORNEY GENERAL|ORGANIZATION|Office of Ryan Baasch)
+(""entity""|AUSTIN|LOCATION|City Texas)
+(""entity""|STATE OF TEXAS|ORGANIZATION|Plaintiff Appellant)
+(""entity""|RYAN DANIEL WALTERS|PERSON|Attorney for State of Texas)
+(""relationship""|JEFF JOHNSON|STATE OF MISSOURI|Johnson is Plaintiff Appellant for State of Missouri|9)
+(""relationship""|RYAN BAASCH|STATE OF TEXAS|Baasch is Plaintiff Appellant for State of Texas|9)
+(""relationship""|RYAN BAASCH|OFFICE OF THE TEXAS ATTORNEY GENERAL|Baasch is from Office of the Texas Attorney General|9)
+(""relationship""|RYAN BAASCH|AUSTIN|Baasch is from Austin|9)
+(""relationship""|RYAN DANIEL WALTERS|STATE OF TEXAS|Walters is Attorney for State of Texas|9)
+(""relationship""|RYAN DANIEL WALTERS|OFFICE OF THE ATTORNEY GENERAL OF TEXAS|Walters is from Office of the Attorney General of Texas|9)
+(""relationship""|RYAN DANIEL WALTERS|AUSTIN|Walters is from Austin|9)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","For State of Texas, Plaintiff - Appellant: Ryan Baasch, Office of the Texas Attorney General, Austin, TX; Ryan Daniel Walters, Attorney, Office of the Attorney General of Texas, Austin, TX. For Joseph R.","(""entity""|RYAN BAASCH|PERSON|Plaintiff Appellant Office of the Texas Attorney General Austin TX)
+(""entity""|RYAN DANIEL WALTERS|PERSON|Attorney Office of the Attorney General of Texas Austin TX)
+(""entity""|JOSEPH R.|PERSON|Defendant)
+(""entity""|AUSTIN|LOCATION|Austin TX)
+(""entity""|TEXAS|LOCATION|Texas)
+(""relationship""|RYAN BAASCH|RYAN DANIEL WALTERS|Both are attorneys for the State of Texas|9)
+(""relationship""|RYAN BAASCH|AUSTIN|Baasch is from Austin TX|9)
+(""relationship""|RYAN BAASCH|TEXAS|Baasch is from Texas|9)
+(""relationship""|RYAN DANIEL WALTERS|AUSTIN|Walters is from Austin TX|9)
+(""relationship""|RYAN DANIEL WALTERS|TEXAS|Walters is from Texas|9)
+(""relationship""|JOSEPH R.|RYAN BAASCH|Joseph R. is represented by Baasch|9)
+(""relationship""|JOSEPH R.|RYAN DANIEL WALTERS|Joseph R. is represented by Walters|9)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","For Joseph R. Biden, Jr., in his official capacity as President of the United States of America, United States of America, Alejandro Mayorkas, in his official capacity as Secretary of the United States Department of Homeland Security, United States Department of Homeland Security, Troy A.","(""entity""|JOSEPH R. BIDEN|PERSON|President of the United States)
+(""entity""|ALEJANDRO MAYORKAS|PERSON|Secretary of the United States Department of Homeland Security)
+(""entity""|TROY A.|PERSON|Individual)
+(""relationship""|JOSEPH R. BIDEN|ALEJANDRO MAYORKAS|Both Biden and Mayorkas were sued in their official capacities|7)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Biden, Jr., in his official capacity as President of the United States of America, United States of America, Alejandro Mayorkas, in his official capacity as Secretary of the United States Department of Homeland Security, United States Department of Homeland Security, Troy A. Miller, in his official capacity as Acting Commissioner of the United States Customs and Border Protection, United States Customs and Border Protection, Defendants - Appellees: Michael Shih, Michael J.","(""entity""|JOSEPH R. BIDEN JR.|PERSON|President of the United States)
+(""entity""|ALEJANDRO MAYORKAS|PERSON|Secretary of the United States Department of Homeland Security)
+(""entity""|TROY A. MILLER|PERSON|Acting Commissioner of the United States Customs and Border Protection)
+(""entity""|MICHAEL SHIH|PERSON|Defendant)
+(""entity""|MICHAEL J.|PERSON|Defendant)
+(""relationship""|JOSEPH R. BIDEN JR.|ALEJANDRO MAYORKAS|Biden is the President and Mayorkas is the Secretary of Homeland Security|7)
+(""relationship""|JOSEPH R. BIDEN JR.|TROY A. MILLER|Biden is the President and Miller is the Acting Commissioner of Customs and Border Protection|7)
+(""relationship""|ALEJANDRO MAYORKAS|TROY A. MILLER|Mayorkas is the Secretary of Homeland Security and Miller is the Acting Commissioner of Customs and Border Protection|7)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Miller, in his official capacity as Acting Commissioner of the United States Customs and Border Protection, United States Customs and Border Protection, Defendants - Appellees: Michael Shih, Michael J. Gerardi, Amanda Mundell, Anne M.","(""entity""|MILLER|PERSON|Acting Commissioner of United States Customs and Border Protection)
+(""entity""|UNITED STATES CUSTOMS AND BORDER PROTECTION|ORGANIZATION|Organization whose Acting Commissioner Miller is)
+(""entity""|MICHAEL SHIH|PERSON|Defendant)
+(""entity""|MICHAEL J. GERARDI|PERSON|Defendant)
+(""entity""|AMANDA MUNDELL|PERSON|Defendant)
+(""entity""|ANNE M.|PERSON|Defendant)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Gerardi, Amanda Mundell, Anne M. Murphy, Trial Attorney, Michael S.","(""entity""|GERARDI|PERSON|Trial Attorney)
+(""entity""|AMANDA MUNDELL|PERSON|Trial Attorney)
+(""entity""|ANNE M. MURPHY|PERSON|Trial Attorney)
+(""entity""|MICHAEL S.|PERSON|Trial Attorney)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Murphy, Trial Attorney, Michael S. Raab, Andrew Irwin Warden, U.S. Department of Justice, Washington, DC.","(""entity""|MICHAEL S. RAAB|PERSON|Trial Attorney)
+(""entity""|ANDREW IRWIN WARDEN|PERSON|Warden)
+(""entity""|U.S. DEPARTMENT OF JUSTICE|ORGANIZATION|Organization)
+(""entity""|WASHINGTON|LOCATION|City, District of Columbia)
+(""relationship""|MICHAEL S. RAAB|U.S. DEPARTMENT OF JUSTICE|Raab is a Trial Attorney for the U.S. Department of Justice|9)
+(""relationship""|ANDREW IRWIN WARDEN|U.S. DEPARTMENT OF JUSTICE|Warden is associated with the U.S. Department of Justice|9)
+(""relationship""|MICHAEL S. RAAB|WASHINGTON|Raab is based in Washington|9)
+(""relationship""|ANDREW IRWIN WARDEN|WASHINGTON|Warden is based in Washington|9)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Raab, Andrew Irwin Warden, U.S. Department of Justice, Washington, DC. Judges: Before JONES, SMITH, and GRAVES, Circuit Judges.","(""entity""|RAAB|PERSON|Warden of U.S. Department of Justice)
+(""entity""|ANDREW IRWIN WARDEN|PERSON|Warden of U.S. Department of Justice)
+(""entity""|U.S. DEPARTMENT OF JUSTICE|ORGANIZATION|Organization whose Warden is Raab)
+(""entity""|WASHINGTON|LOCATION|Washington, District of Columbia)
+(""entity""|JONES|PERSON|Circuit Judge)
+(""entity""|SMITH|PERSON|Circuit Judge)
+(""entity""|GRAVES|PERSON|Circuit Judge)
+(""relationship""|RAAB|U.S. DEPARTMENT OF JUSTICE|Raab is Warden of the U.S. Department of Justice|9)
+(""relationship""|RAAB|WASHINGTON|Raab is based in Washington|9)
+(""relationship""|ANDREW IRWIN WARDEN|U.S. DEPARTMENT OF JUSTICE|Andrew Irwin Warden is Warden of the U.S. Department of Justice|9)
+(""relationship""|JONES|SMITH|Both are Circuit Judges|8)
+(""relationship""|JONES|GRAVES|Both are Circuit Judges|8)
+(""relationship""|SMITH|GRAVES|Both are Circuit Judges|8)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Judges: Before JONES, SMITH, and GRAVES, Circuit Judges. JAMES E.","(""entity""|JONES|PERSON|Circuit Judge)
+(""entity""|SMITH|PERSON|Circuit Judge)
+(""entity""|GRAVES|PERSON|Circuit Judge)
+(""entity""|JAMES E.|PERSON|Circuit Judge)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","JAMES E. GRAVES, JR., Circuit Judge, concurring in part and dissenting in part.","(""entity""|JAMES E. GRAVES|PERSON|Circuit Judge concurring in part and dissenting in part)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","GRAVES, JR., Circuit Judge, concurring in part and dissenting in part. Opinion by: EDITH H.","(""entity""|GRAVES|PERSON|Circuit Judge concurring in part and dissenting in part)
+(""entity""|EDITH H.|PERSON|Judge who wrote the opinion)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Opinion by: EDITH H. JONES Opinion [*268] Edith H.","(""entity""|EDITH H. JONES|PERSON|Judge who wrote the opinion)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","JONES Opinion [*268] Edith H. Jones, Circuit Judge: In 2018, the Department [**2] of Homeland Security declared, ""Walls Work."" Indeed, DHS touted the effectiveness of its newly constructed border wall system.","(""entity""|EDITH H. JONES|PERSON|Circuit Judge who wrote the opinion)
+(""entity""|DEPARTMENT OF HOMELAND SECURITY|ORGANIZATION|Department that declared ""Walls Work"")
+(""relationship""|EDITH H. JONES|DEPARTMENT OF HOMELAND SECURITY|Jones wrote an opinion citing DHS's declaration|8)"
+"1-100/Gen. Land Office of Tex v. Biden, 71 F.4th 264","Jones, Circuit Judge: In 2018, the Department [**2] of Homeland Security declared, ""Walls Work."" Indeed, DHS touted the effectiveness of its newly constructed border wall system. But in January 2021, President Biden ordered DHS to reverse course, ending all new border wall construction.","(""entity""|JONES|PERSON|Circuit Judge)
+(""entity""|DEPARTMENT OF HOMELAND SECURITY|ORGANIZATION|Department that declared ""Walls Work"")
+(""entity""|BIDEN|PERSON|President who ordered DHS to reverse course)
+(""relationship""|DEPARTMENT OF HOMELAND SECURITY|BIDEN|DHS was ordered by Biden to reverse course|8)
+(""relationship""|DEPARTMENT OF HOMELAND SECURITY|DEPARTMENT OF HOMELAND SECURITY|DHS declared ""Walls Work""|9)"
