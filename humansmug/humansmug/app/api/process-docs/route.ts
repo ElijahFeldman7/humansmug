@@ -72,55 +72,6 @@ the separator.
 (5) Completion Token: End the output with: {completion_delimiter}
 `;
 
-const COREF_PROMPT = `
-- Goal -
-You are a highly precise and intelligent coreference resolution system designed to support named entity recognition
-(NER) and knowledge graph construction. Your task is to resolve all coreferences related to the Person entity
-type—including roles and titles (e.g., Defendant, Officer, Agent)—in a given input text, while strictly preserving its
-original structure and wording. The resolved output will be used for extracting person entities and relationships in
-the context of human smuggling networks. Therefore, maintaining accuracy and consistency is critical. Do not
-summarize, explain, or alter the text—only return the full, unmodified input with Person coreferences resolved
-according to the rules below.
-Note: This is an unsupervised coreference resolution task. The instructions are designed to guide you in resolving
-person-related references. While examples are provided, they do not cover all scenarios. You must infer and apply
-coreference logic based on contextual understanding, even when phrasing or structure varies.
-- Coreference Resolution Rules — Person Entity Type -
-• After a person is introduced with their full name (e.g., Paul Silva), replace all subsequent mentions—including
-last name only (e.g., S.), role + last name (e.g., Agent S.), and abbreviated forms (e.g., BPA S.)—with the full
-name only.
-• In all coreference resolutions, strip titles from mentions. For example, "Agent I." or "Agent J.C.D.A." should
-resolve to "Hector D.I." or "J.C.D.A.".
-• For compound names, match based on the final component (e.g., I., R.) and resolve to the full name.
-• If two or more individuals share a last name, resolve ambiguous mentions conservatively—default to the most
-recently introduced full name unless context clearly indicates otherwise.
-• If abbreviated titles appear (e.g., BPA, Agent, Officer + Last Name), remove the title and resolve to the full name.
-• If a person is introduced as "Defendant M.D.J.G.", resolve it to "M.D.J.G" immediately and throughout.
-• If someone is introduced as "Border Patrol Agent H.D.I", retain this in the first mention, but resolve all later
-mentions (e.g., "Agent I.") to "H.D.I".
-• Apply all replacements across the entire document, including headers, transcripts, footnotes, and end-ofdocument text.
-Multiple Defendants:
-• If multiple defendants are introduced, resolve "the defendants" to a comma-separated list of their full names, in
-the order introduced.
-• "The defendant" (singular) should resolve to the most recently mentioned full defendant name unless context
-indicates otherwise.
-• Always resolve all such role-based mentions, even in peripheral document sections.
-- Examples -
-Example 1:
-Input: Border Patrol Agent B.S. observed the vehicle. BPA S. contacted another agent.
-Output: Border Patrol Agent B.S. observed the vehicle. B.S. contacted another agent.
-Example 2:
-Input: Border Patrol Agent H.D.I led the operation. I. coordinated with the local sheriff.
-Output: Border Patrol Agent H.D.I. led the operation. H.D.I coordinated with the local sheriff. ....
-- Input Text -
-Resolve all Person entity coreferences in the following document, including those in footnotes and headers. Return
-only the modified text. If none exist, return the input unchanged. Do not summarize or explain. Input_text:
-{input_text}
-Output:
-
-When taking tuples and merging them, do NOT pick just the first description. Merge all descriptions and retain every
-distinct factual detail. Deduplicate repeats but keep unique qualifiers (roles, locations, dates, aliases, methods,
-affiliations). If details conflict, keep both. Keep descriptions compact but information-dense.
-`;
 
 function csvEscape(value: string | null | undefined) {
   const safe = String(value ?? "");
@@ -197,11 +148,6 @@ async function extractTuples(blurb: string) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return `("entity"{tuple_delimiter}EXTRACTION_ERROR{tuple_delimiter}ORGANIZATION{tuple_delimiter}${message})\n{record_delimiter}\n{completion_delimiter}`;
   }
-}
-
-async function corefTuples(allTuples: string) {
-  const prompt = `${COREF_PROMPT}\n\nTuples:\n${allTuples}\n`;
-  return callGemini(prompt);
 }
 
 function normalizeName(value?: string) {
@@ -581,36 +527,12 @@ function extractCitationMap(
   };
 }
 
-function hasValidEntities(raw: string) {
-  const norm = String(raw || "")
-    .replace(/\{tuple_delimiter\}/g, "\x01")
-    .replace(/\{record_delimiter\}/g, "\n")
-    .replace(/\{completion_delimiter\}/g, "");
-  const lines = norm.split(/\n+/).map((l) => l.trim()).filter(Boolean);
-  let valid = 0;
-  for (const line of lines) {
-    if (!line.startsWith('("entity"')) continue;
-    const separator = line.includes("\x01") ? "\x01" : "|";
-    const parts = line
-      .split(separator)
-      .map((p) => String(p ?? "").replace(/^"|"$/g, "").trim())
-      .filter(Boolean);
-    if (parts.length >= 3) {
-      valid += 1;
-      if (valid >= 2) return true;
-    }
-  }
-  return false;
-}
-
 export async function POST(request: Request) {
   try {
     const form = await request.formData();
     const files = form.getAll("files").filter(Boolean) as File[];
     const blurbSize = Number(form.get("blurbSize") || 2);
     const applyFilter = String(form.get("applyFilter") || "true") !== "false";
-    const runCorefParam = form.get("runCoref");
-    let runCoref = runCorefParam === null ? true : String(runCorefParam) !== "false";
 
     if (!files.length) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
@@ -733,19 +655,7 @@ export async function POST(request: Request) {
     let mergedTuples = mergeTuplesLocally(combinedTuples);
     const evidenceMap = extractEvidenceMap(tupleRows);
     const citationMap = extractCitationMap(tupleRows, savedFiles);
-    if (tupleRows.length && !rows.length && runCorefParam === null) {
-      runCoref = false;
-    }
-    if (runCoref && combinedTuples.length < 12000) {
-      try {
-        const coref = await corefTuples(combinedTuples);
-        if (hasValidEntities(coref)) {
-          mergedTuples = coref;
-        }
-      } catch {
-        // fall back to local merge
-      }
-    }
+    // Coreference resolution is intentionally disabled: use merged tuples directly.
 
     await fs.writeFile(mergedPath, mergedTuples, "utf-8");
 

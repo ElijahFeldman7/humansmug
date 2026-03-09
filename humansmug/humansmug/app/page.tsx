@@ -69,7 +69,6 @@ export default function Home() {
   const [docFiles, setDocFiles] = useState<FileList | null>(null);
   const [isProcessingDocs, setIsProcessingDocs] = useState(false);
   const [processStatus, setProcessStatus] = useState("");
-  const [runCoref, setRunCoref] = useState(true);
   const [nodeMetaMap, setNodeMetaMap] = useState<Record<string, NodeMeta>>({});
   const [edgeMetaMap, setEdgeMetaMap] = useState<Record<string, EdgeMeta>>({});
   const [evidenceMap, setEvidenceMap] = useState<Record<string, string>>({});
@@ -101,7 +100,7 @@ export default function Home() {
   const [nodeSummaryKeys, setNodeSummaryKeys] = useState<Record<string, string>>({});
   const [communities, setCommunities] = useState<Array<{ id: number; nodes: string[]; size: number }>>([]);
   const [selectedCommunityId, setSelectedCommunityId] = useState<number | null>(null);
-  const [rightPanel, setRightPanel] = useState<RightPanelMode>("agent");
+  const [rightPanel, setRightPanel] = useState<RightPanelMode>("upload");
   const [sidebarSection, setSidebarSection] = useState<"detail" | "entities" | "ranking" | "subgroups">("detail");
   const [showSettings, setShowSettings] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -220,7 +219,6 @@ export default function Home() {
       Array.from(docFiles).forEach((file) => form.append("files", file));
       form.append("blurbSize", "2");
       form.append("applyFilter", "true");
-      form.append("runCoref", runCoref ? "true" : "false");
 
       const response = await fetch("/api/process-docs", {
         method: "POST",
@@ -255,7 +253,7 @@ export default function Home() {
     } finally {
       setIsProcessingDocs(false);
     }
-  }, [docFiles, renderOnDiagram, showToast, runCoref]);
+  }, [docFiles, renderOnDiagram, showToast]);
 
   const resolveNodeId = useCallback((name: string): string | null => {
     if (nodeMetaMapRef.current[name]) return name;
@@ -835,45 +833,13 @@ export default function Home() {
   /* ─── Right panel icon tabs ─── */
   const panelTabs: Array<{ key: RightPanelMode; label: string; icon: React.ReactNode }> = [
     {
-      key: "agent",
-      label: "Agent",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-      ),
-    },
-    {
       key: "upload",
-      label: "Upload",
+      label: "CSV Upload",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="17 8 12 3 7 8" />
           <line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
-      ),
-    },
-    {
-      key: "stats",
-      label: "Stats",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
-          <line x1="18" y1="20" x2="18" y2="10" />
-          <line x1="12" y1="20" x2="12" y2="4" />
-          <line x1="6" y1="20" x2="6" y2="14" />
-        </svg>
-      ),
-    },
-    {
-      key: "osint",
-      label: "OSINT",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-          <path d="M11 8v6" />
-          <path d="M8 11h6" />
         </svg>
       ),
     },
@@ -920,7 +886,7 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="grid min-h-0 grid-cols-1">
+        <div className="grid min-h-0 md:grid-cols-[1fr_380px]">
           <div className="relative flex min-h-0 min-w-0">
             {/* Sidebar */}
             <aside className="flex w-[300px] shrink-0 flex-col overflow-hidden border-r border-[#2a3347] bg-[#141820]">
@@ -1094,7 +1060,7 @@ export default function Home() {
           </div>
 
           {/* ─── RIGHT: Context panel ─── */}
-          <div className="hidden min-h-0 flex-col border-l border-[#2a3347] bg-[#141820]">
+          <div className="flex min-h-0 flex-col border-l border-[#2a3347] bg-[#141820]">
             {/* Panel tab bar */}
             <div className="flex items-center border-b border-[#2a3347]">
               {panelTabs.map((tab) => (
@@ -1205,11 +1171,11 @@ export default function Home() {
                     <span className="text-[0.72rem] font-semibold text-[#9aa6cf] transition group-hover:text-[#cdd6f4]">
                       {docFiles && docFiles.length > 0
                         ? `${docFiles.length} file${docFiles.length > 1 ? "s" : ""} selected`
-                        : "Choose DOCX or CSV files"}
+                        : "Choose CSV files"}
                     </span>
                     <input
                       type="file"
-                      accept=".docx,.csv"
+                      accept=".csv"
                       multiple
                       className="hidden"
                       onChange={(event) => setDocFiles(event.target.files)}
@@ -1225,15 +1191,6 @@ export default function Home() {
                     >
                       {isProcessingDocs ? "Processing..." : "Process"}
                     </button>
-                    <label className="flex items-center gap-1.5 text-[0.62rem] text-[#6272a4]">
-                      <input
-                        type="checkbox"
-                        checked={runCoref}
-                        onChange={(event) => setRunCoref(event.target.checked)}
-                        className="size-3 accent-[#4af0b0]"
-                      />
-                      Coref
-                    </label>
                   </div>
 
                   {processStatus && (
