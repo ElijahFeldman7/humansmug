@@ -22,7 +22,6 @@ export const parseTuples = (rawText: string): ParsedGraphData => {
     if (!value) return true;
     const upper = normalizeNodeName(value);
 
-    // Court/legal entities that should never appear as graph nodes.
     if (
       upper.includes("US DISTRICT COURT") ||
       upper.includes("U.S. DISTRICT COURT") ||

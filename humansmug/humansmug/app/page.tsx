@@ -9,6 +9,7 @@ import { EntityList } from "@/app/components/graph/EntityList";
 import { GraphCanvas } from "@/app/components/graph/GraphCanvas";
 import { HeaderStats } from "@/app/components/graph/HeaderStats";
 import { Legend } from "@/app/components/graph/Legend";
+import { ManualTupleBuilder } from "@/app/components/ManualTupleBuilder";
 import dynamic from "next/dynamic";
 
 import { Toast } from "@/app/components/graph/Toast";
@@ -20,6 +21,7 @@ import { computeCommunities } from "@/app/lib/graph/community";
 import type { DetailState, EdgeMeta, NodeMeta } from "@/app/lib/graph/types";
 
 type RightPanelMode = "agent" | "upload" | "stats" | "osint";
+type AppMode = "graph" | "builder";
 
 type OsintCandidate = {
   name: string;
@@ -97,6 +99,7 @@ export default function Home() {
   const [sidebarSection, setSidebarSection] = useState<"detail" | "entities" | "ranking" | "subgroups">("detail");
   const [showSettings, setShowSettings] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [appMode, setAppMode] = useState<AppMode>("graph");
   const [osintCandidates, setOsintCandidates] = useState<OsintCandidate[]>([]);
   const [osintTasks, setOsintTasks] = useState<OsintTask[]>([]);
   const [osintAnalyzing, setOsintAnalyzing] = useState(false);
@@ -808,32 +811,64 @@ export default function Home() {
       <div className="grid h-dvh grid-rows-[auto_minmax(0,1fr)]">
         {/* ─── Header ─── */}
         <div className="flex items-center border-b border-[#2a3347] bg-[#141820] px-5 py-2.5">
-          <HeaderStats nodesCount={nodesCount} edgesCount={edgesCount} />
-          <button
-            type="button"
-            onClick={() => setShowMap(true)}
-            className="ml-3 grid size-[30px] place-items-center rounded-lg border border-[#2a3347] text-[#6272a4] transition hover:border-[#4af0b0] hover:text-[#4af0b0]"
-            title="Map View"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
-              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
-              <line x1="8" y1="2" x2="8" y2="18" />
-              <line x1="16" y1="6" x2="16" y2="22" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowSettings((prev) => !prev)}
-            className="ml-1.5 grid size-[30px] place-items-center rounded-lg border border-[#2a3347] text-[#6272a4] transition hover:border-[#4af0b0] hover:text-[#4af0b0]"
-            title="Settings"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          </button>
+          <div className="rounded-xl border border-[#2a3347] bg-[#0d0f14] p-1">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setAppMode("graph")}
+                className={`rounded-lg px-3 py-1.5 text-[0.62rem] font-bold uppercase tracking-[0.12em] transition ${
+                  appMode === "graph"
+                    ? "bg-[#4af0b0] text-[#0d0f14]"
+                    : "text-[#6272a4] hover:text-[#cdd6f4]"
+                }`}
+              >
+                Graph Workspace
+              </button>
+              <button
+                type="button"
+                onClick={() => setAppMode("builder")}
+                className={`rounded-lg px-3 py-1.5 text-[0.62rem] font-bold uppercase tracking-[0.12em] transition ${
+                  appMode === "builder"
+                    ? "bg-[#5b8dff] text-[#0d0f14]"
+                    : "text-[#6272a4] hover:text-[#cdd6f4]"
+                }`}
+              >
+                Manual Tuple Builder
+              </button>
+            </div>
+          </div>
+
+          {appMode === "graph" && (
+            <>
+              <HeaderStats nodesCount={nodesCount} edgesCount={edgesCount} />
+              <button
+                type="button"
+                onClick={() => setShowMap(true)}
+                className="ml-3 grid size-[30px] place-items-center rounded-lg border border-[#2a3347] text-[#6272a4] transition hover:border-[#4af0b0] hover:text-[#4af0b0]"
+                title="Map View"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
+                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+                  <line x1="8" y1="2" x2="8" y2="18" />
+                  <line x1="16" y1="6" x2="16" y2="22" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSettings((prev) => !prev)}
+                className="ml-1.5 grid size-[30px] place-items-center rounded-lg border border-[#2a3347] text-[#6272a4] transition hover:border-[#4af0b0] hover:text-[#4af0b0]"
+                title="Settings"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-[14px]">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+              </button>
+            </>
+          )}
         </div>
 
+        {appMode === "graph" ? (
         <div className="grid min-h-0 md:grid-cols-[1fr_380px]">
           <div className="relative flex min-h-0 min-w-0">
             {/* Sidebar */}
@@ -1403,10 +1438,13 @@ export default function Home() {
             </div>
           </div>
         </div>
+        ) : (
+          <ManualTupleBuilder />
+        )}
       </div>
 
       {/* ─── Settings popover ─── */}
-      {showSettings && (
+      {appMode === "graph" && showSettings && (
         <div className="fixed inset-0 z-50 flex items-start justify-end p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowSettings(false)} />
           <div className="relative mt-12 mr-4 w-[340px] rounded-xl border border-[#2a3347] bg-[#141820] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
@@ -1489,7 +1527,7 @@ export default function Home() {
       )}
 
       {/* ─── Fullscreen Map Overlay ─── */}
-      {showMap && (
+      {appMode === "graph" && showMap && (
         <div
           className="fixed inset-0 z-50 flex flex-col bg-[#0d0f14]"
           onKeyDown={(e) => { if (e.key === "Escape") setShowMap(false); }}

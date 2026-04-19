@@ -1,0 +1,28 @@
+chunk_index,input_text,output_text
+1,"Opinion [*879] PER CURIAM:* Defendant-Appellant Yudeluis Alberto Jimenez-Elvirez appeals his concurrent, 84-month, above-guidelines range sentences for six counts of conspiracy to transport an undocumented alien within the United States, which were imposed following the vacatur of his original, 97-month sentences on those counts. Jimenez-Elvirez contends that his present sentences are both procedurally and substantively unreasonable for the same reasons: The district court failed to adequately consider his rehabilitative efforts during his initial incarceration and gave too much weight to the risk of harm caused by his alien smuggling activities as well as his recidivism. We affirm.","(""entity""{tuple_delimiter}YUDELUIS ALBERTO JIMENEZ-ELVIREZ{tuple_delimiter}PERSON{tuple_delimiter}The defendant of the case) {record_delimiter}
+(""entity""{tuple_delimiter}UNDOCUMENTED ALIEN{tuple_delimiter}PERSON{tuple_delimiter}The undocumented alien was suspected of being transported over the border by Yudeluis Alberto Jimenez-Elvirez.) {record_delimiter}
+(""entity""{tuple_delimiter}UNITED STATES{tuple_delimiter}LOCATION{tuple_delimiter}The country of residence of the undocumented alien.) {record_delimiter}
+(""relationship""{tuple_delimiter}YUDELUIS ALBERTO JIMENEZ-ELVIREZ{tuple_delimiter}UNDOCUMENTED ALIEN{tuple_delimiter}Yudeluis conspired to transport undocumented aliens within the United States.{tuple_delimiter}4) {record_delimiter}
+(""relationship""{tuple_delimiter}UNDOCUMENTED ALIEN{tuple_delimiter}UNITED STATES{tuple_delimiter}The undocumented alien was transported within the United States.{tuple_delimiter}5) {record_delimiter}
+(""relationship""{tuple_delimiter}YUDELUIS ALBERTO JIMENEZ-ELVIREZ{tuple_delimiter}UNITED STATES{tuple_delimiter}Yudeluis transported the alien within the United States{tuple_delimiter}5) {record_delimiter}
+{completion_delimiter}"
+2,"Jimenez-Elvirez fails to show clear or [**2] obvious procedural error. See Puckett v. United States, 556 U.","{completion_delimiter}"
+3,"S. 129, 134, 129 S. Ct.","{completion_delimiter}"
+4,"1423, 173 L. Ed. 2d 266 (2009); United States v.","{completion_delimiter}"
+5,"Mondragon-Santiago, 564 F. 3d 357, 361 (5th Cir. 2009).","{completion_delimiter}"
+6,"Contrary to his assertion, the district court explicitly considered his rehabilitation but concluded, in its discretion, that his postsentence conduct did not warrant a lower sentence. See Pepper v. United States, 562 U.","{completion_delimiter}"
+7,"S. 476, 491-93, 131 S. Ct.","{completion_delimiter}"
+8,"1229, 179 L. Ed. 2d 196 (2011).","{completion_delimiter}"
+9,"Moreover, the district court's findings as to risk of harm and recidivism were adequately supported by the unobjected-to presentence report and supported the imposition of a nonguidelines sentence despite also factoring into the calculation of Jimenez-Elvirez's guidelines range. See United States v. Key, 599 F.","{completion_delimiter}"
+10,"3d 469, 475 (5th Cir. 2010). Jimenez-Elvirez cites no authority to the contrary.","{completion_delimiter}"
+11,"See United States v. Gonzalez, 792 F. 3d 534, 538 (5th Cir.","{completion_delimiter}"
+12,"2015). Nor does Jimenez-Elvirez demonstrate substantive sentencing error, plain or otherwise. He identifies no 18 U.","{completion_delimiter}"
+13,"S. C. § 3553(a) factor that received either insufficient or inordinate weight or any clear error in balancing the sentencing factors.","{completion_delimiter}"
+14,"See United States v. Smith, 440 F. 3d 704, 708 (5th Cir.","{completion_delimiter}"
+15,"2006). Rather, he merely disagrees with the district court's weighing of the § 3553(a) factors. See United States v.","{completion_delimiter}"
+16,"Malone, 828 F. 3d 331, 342 (5th Cir. 2016).","{completion_delimiter}"
+17,"Considering the totality of the supporting circumstances, we defer to the district court's decision that the § 3553(a) factors, on the whole, justify the extent of the variance in this case. See Gall v. United States, 552 U.","{completion_delimiter}"
+18,"S. 38, 51, 128 S. Ct.","{completion_delimiter}"
+19,"586, 169 L. Ed. 2d 445 (2007); United States v.","{completion_delimiter}"
+20,"McElwee, 646 F. 3d 328, 346 (5th Cir. 2011).","{completion_delimiter}"
+21,"AFFIRMED.","{completion_delimiter}"
